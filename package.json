@@ -1,0 +1,48 @@
+{
+  "name": "my-mobile",
+  "version": "1.0.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@clerk/clerk-expo": "^1.1.1",
+    "@clerk/nextjs": "^5.0.9",
+    "@expo/metro-runtime": "~3.2.1",
+    "@expo/vector-icons": "^14.0.0",
+    "@react-native-community/hooks": "^2.8.1",
+    "@react-native-picker/picker": "2.7.5",
+    "@react-navigation/bottom-tabs": "^6.5.20",
+    "@react-navigation/native": "^6.1.17",
+    "@react-navigation/stack": "^6.3.29",
+    "@types/react": "~18.2.45",
+    "expo": "^51.0.5",
+    "expo-status-bar": "~1.12.1",
+    "expo-web-browser": "~13.0.3",
+    "firebase": "^10.11.1",
+    "nativewind": "^2.0.11",
+    "prop-types": "^15.8.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-native": "0.74.1",
+    "react-native-element-dropdown": "^2.12.0",
+    "react-native-gesture-handler": "~2.16.1",
+    "react-native-linear-gradient": "^2.8.3",
+    "react-native-pager-view": "6.3.0",
+    "react-native-ratings": "^8.1.0",
+    "react-native-web": "^0.19.12",
+    "twrnc": "^4.2.0",
+    "typescript": "~5.3.3",
+    "undefined": "@/components/icon",
+    "expo-linear-gradient": "~13.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/react-native": "^0.73.0",
+    "tailwindcss": "^3.3.2"
+  },
+  "private": true
+}
