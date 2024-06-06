@@ -5,6 +5,7 @@ import HomeScreen from "../Screens/HomeScreen";
 import ItemList from "../Screens/ItemList";
 import ProductDetail from "../Screens/ProductDetail";
 import CartScreen from "../Screens/CartScreen";
+import OrderScreen from "../Screens/OrderScreen";
 
 const Stack = createStackNavigator();
 export default function HomeScreenStackNav() {
@@ -35,12 +36,22 @@ export default function HomeScreenStackNav() {
         })}
       />
       <Stack.Screen
-        name="cart"
-        component={CartScreen}
+        name="order"
+        component={OrderScreen}
         options={({ route }) => ({
           headerStyle: { backgroundColor: "#000" },
           headerTintColor: "#fff",
           headerTitle: "Thanh toán",
+        })}
+      />
+      <Stack.Screen
+        name="cart"
+        component={CartScreen}
+        options={({ route }) => ({
+          headerShown: true,
+          headerStyle: { backgroundColor: "#000" },
+          headerTintColor: "#fff",
+          headerTitle: "Giỏ hàng",
         })}
       />
     </Stack.Navigator>

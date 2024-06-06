@@ -44,20 +44,7 @@ export default function TabNavigation() {
           ),
         }}
       />
-      {/* <Tab.Screen
-        name="cart"
-        component={CartScreen}
-        options={{
-          tabBarLabel: ({ color }) => (
-            <Text style={{ color: color, fontSize: 12, marginBottom: 3 }}>
-              Cart
-            </Text>
-          ),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cart" size={size} color={color} />
-          ),
-        }}
-      /> */}
+
       <Tab.Screen
         name="addpost"
         component={AddPostScreen}

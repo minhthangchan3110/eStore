@@ -30,10 +30,17 @@ import { app } from "../../firebaseConfig";
 import LastestItemList from "../Components/HomeScreens/LastestItemList";
 import { Rating } from "react-native-ratings";
 import { TextInput } from "react-native-gesture-handler";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../../redux/cartReducer";
+import CustomAlert from "../Components/Modal/CustomAlert";
 
 const windowWidth = Dimensions.get("window").width;
 
 export default function ProductDetail({ item }) {
+  const cart = useSelector((state) => state.cart.cart);
+
+  const dispatch = useDispatch();
+  const addItemToCart = (item) => dispatch(addToCart(item));
   const { params } = useRoute();
   const [product, setProduct] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
@@ -41,14 +48,15 @@ export default function ProductDetail({ item }) {
   const [reviews, setReviews] = useState([]);
   const db = getFirestore(app);
   const navigation = useNavigation();
+  const [alertVisible, setAlertVisible] = useState(false);
   useEffect(() => {
     if (params && params.product) {
       setProduct(params.product);
       getProductsByCategory(params.product.category, params.product.name);
       getReviews();
     }
-    console.log(params);
   }, [params]);
+
   const getReviews = async () => {
     try {
       const db = getFirestore(app);
@@ -65,6 +73,7 @@ export default function ProductDetail({ item }) {
       Alert.alert("Error", "Failed to fetch reviews.");
     }
   };
+
   const getProductsByCategory = async (category, currentProductName) => {
     setListItem([]);
     const q = query(
@@ -102,7 +111,13 @@ export default function ProductDetail({ item }) {
   };
 
   const handleAddCart = () => {
-    console.log("Click Add");
+    console.log("Product to be added to cart:", product);
+    addItemToCart(product);
+    setAlertVisible(true);
+  };
+
+  const handleBuyNow = () => {
+    navigation.navigate("order", { product });
   };
 
   const formatPrice = (price) => {
@@ -155,9 +170,9 @@ export default function ProductDetail({ item }) {
   const [rating, setRating] = useState(0);
 
   const handleRating = (ratingValue) => {
-    // Xử lý logic khi người dùng đánh giá
     setRating(ratingValue);
   };
+
   const [comment, setComment] = useState("");
 
   const handleCommentChange = (text) => {
@@ -167,18 +182,15 @@ export default function ProductDetail({ item }) {
   const handleSubmitReview = async () => {
     try {
       if (rating === 0) {
-        // If user hasn't provided a rating, display an alert
         Alert.alert("Lỗi", "Vui lòng chọn số sao trước khi gửi đánh giá.");
         return;
       }
 
       if (comment.trim() === "") {
-        // If user hasn't provided a comment, display an alert
         Alert.alert("Lỗi", "Vui lòng nhập nhận xét trước khi gửi đánh giá.");
         return;
       }
 
-      // Add a new record to Firestore
       const reviewsRef = collection(db, "Reviews");
       await addDoc(reviewsRef, {
         productName: params.product.name,
@@ -186,21 +198,16 @@ export default function ProductDetail({ item }) {
         comment: comment,
       });
 
-      // Clear the comment field after submission
       setComment("");
-      setRating("0");
+      setRating(0);
 
-      // Show a success message to the user
       Alert.alert("Thành công", "Đánh giá đã được gửi.");
     } catch (error) {
       console.error("Error adding review: ", error);
-      // Handle the error and display an error message to the user
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi gửi đánh giá.");
     }
   };
-  const handleBuyNow = () => {
-    navigation.navigate("cart", { product });
-  };
+
   return (
     <ScrollView className="bg-white w-full h-full">
       <View className="flex justify-center items-center">
@@ -258,6 +265,10 @@ export default function ProductDetail({ item }) {
             <Feather name="shopping-cart" size={24} color="black" />
             <Text className="text-xs mt-1">Thêm vào giỏ</Text>
           </TouchableOpacity>
+          <CustomAlert
+            visible={alertVisible}
+            onClose={() => setAlertVisible(false)}
+          />
           <TouchableOpacity
             onPress={handleBuyNow}
             className="w-2/3 flex justify-center items-center bg-red-600 focus:bg-red-800"
@@ -340,15 +351,12 @@ export default function ProductDetail({ item }) {
           </Text>
         </TouchableOpacity>
       </View>
-      {/* <View style={styles.commentsContainer}>
-        <Text style={styles.commentsTitle}>Đánh giá & Nhận xét</Text>
-        {reviews.map((review, index) => (
-          <View key={index} style={styles.reviewItem}>
-            <Text style={styles.reviewRating}>{review.rating}/5</Text>
-            <Text style={styles.reviewComment}>{review.comment}</Text>
-          </View>
-        ))}
-      </View> */}
+      {reviews.map((review, index) => (
+        <View className="mx-2 border my-1 rounded-lg p-2" key={index}>
+          <Text style={styles.reviewRating}>Rating: {review.rating}</Text>
+          <Text style={styles.reviewComment}>Nhận xét: {review.comment}</Text>
+        </View>
+      ))}
     </ScrollView>
   );
 }

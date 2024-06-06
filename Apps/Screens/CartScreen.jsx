@@ -6,25 +6,60 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
+import CheckBox from "expo-checkbox";
 import React, { useEffect, useState } from "react";
 import { FontAwesome, AntDesign } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRoute } from "@react-navigation/native";
 import { FontAwesome6 } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  decrementQuantity,
+  incrementQuantity,
+  removeFromCart,
+} from "../../redux/cartReducer";
 
 export default function CartScreen() {
-  const [counter, setCounter] = useState(1);
-  console.log(counter);
-  const incrementCounter = () => {
-    setCounter((prevCounter) => prevCounter + 1);
+  const cart = useSelector((state) => state.cart.cart);
+  const dispatch = useDispatch();
+
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  useEffect(() => {
+    let total = 0;
+    selectedItems.forEach((itemIndex) => {
+      total += cart[itemIndex].price * cart[itemIndex].quantity;
+    });
+    setTotalPrice(total);
+  }, [selectedItems, cart]);
+
+  const toggleCheckbox = (index) => {
+    const selectedIndex = selectedItems.indexOf(index);
+    if (selectedIndex === -1) {
+      setSelectedItems([...selectedItems, index]);
+    } else {
+      const updatedSelectedItems = [...selectedItems];
+      updatedSelectedItems.splice(selectedIndex, 1);
+      setSelectedItems(updatedSelectedItems);
+    }
   };
 
-  const decrementCounter = () => {
-    setCounter((prevCounter) => (prevCounter > 0 ? prevCounter - 1 : 0));
+  const incrementCounter = (item) => {
+    dispatch(incrementQuantity({ name: item.name }));
   };
 
-  const route = useRoute();
-  const [product, setProduct] = useState(null);
+  const decrementCounter = (item) => {
+    dispatch(decrementQuantity({ name: item.name }));
+  };
+
+  const handleInputChange = (value, item) => {
+    const numberValue = parseInt(value, 10);
+    if (!isNaN(numberValue) && numberValue > 0) {
+      dispatch(updateQuantity({ name: item.name, quantity: numberValue }));
+    } else {
+      dispatch(updateQuantity({ name: item.name, quantity: item.quantity }));
+    }
+  };
 
   const formatPrice = (price) => {
     if (price === undefined || price === null) return "N/A";
@@ -34,76 +69,89 @@ export default function CartScreen() {
     return formattedPrice + "₫";
   };
 
-  useEffect(() => {
-    if (route.params && route.params.product) {
-      setProduct(route.params.product);
-    }
-  }, [route.params]);
-
-  const handleInputChange = (value) => {
-    const numberValue = parseInt(value, 10);
-    if (!isNaN(numberValue)) {
-      setCounter(numberValue);
-    } else {
-      setCounter(0);
-    }
+  const handleRemoveItem = (item) => {
+    dispatch(removeFromCart({ name: item.name }));
   };
 
   return (
-    <ScrollView className="w-full bg-white">
-      <View className="w-full flex flex-row mx-2 mt-4">
-        <View className="w-1/8">
-          <FontAwesome name="map-marker" size={18} color="red" />
-        </View>
-        <View className="w-7/8 ml-4 flex flex-row items-center">
-          <View className="w-11/12">
-            <Text>Địa chỉ nhận hàng</Text>
-            <Text>Minh Thắng | (+84) 356458854</Text>
-            <Text>
-              Ngõ 181 Nguyễn Trãi, Phường Thượng Đình, Quận Thanh Xuân, Hà Nội
-            </Text>
-          </View>
-          <AntDesign name="right" size={14} color="grey" />
-        </View>
-      </View>
-      <LinearGradient
-        colors={["#6fa6d6", "transparent", "#f18d9b"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        className="w-full h-1 my-2"
-      />
-      {product && (
-        <View className="w-full flex flex-row px-1">
-          <View className="w-1/3 border-gray-300 rounded-lg border flex items-center">
-            <Image
-              source={{ uri: product.image }}
-              className="w-[100px] h-[80px]"
+    <View className="flex-1">
+      <ScrollView className="bg-white w-screen">
+        {cart.map((item, index) => (
+          <View
+            key={index}
+            className="w-11/12 flex flex-row items-center px-2 my-2"
+          >
+            <CheckBox
+              disabled={false}
+              value={selectedItems.includes(index)}
+              onValueChange={() => toggleCheckbox(index)}
             />
-          </View>
-          <View className="w-2/3 pl-2 flex flex-col justify-between">
-            <Text className="w-full font-semibold">{product.name}</Text>
-            <View className="flex flex-row items-end w-full justify-between">
-              <Text className="text-red-500 w-1/2 font-medium text-base">
-                {formatPrice(product.price)}
+            <View className="w-1/3 border-gray-300 rounded-lg border flex items-center ml-2">
+              <Image
+                source={{ uri: item.image }}
+                className="w-[100px] h-[80px]"
+              />
+            </View>
+            <View className="w-2/3 pl-2 flex flex-col justify-between ">
+              <Text className="w-full font-semibold " numberOfLines={2}>
+                {item.name}
               </Text>
-              <View className="flex flex-row w-1/2 items-center justify-around border rounded-xl">
-                <TouchableOpacity onPress={decrementCounter}>
-                  <AntDesign name="minus" size={14} color="black" />
-                </TouchableOpacity>
-                <TextInput
-                  className="border-x text-center w-1/3"
-                  keyboardType="numeric"
-                  onChangeText={handleInputChange}
-                  value={counter.toString()}
-                />
-                <TouchableOpacity onPress={incrementCounter}>
-                  <FontAwesome6 name="add" size={14} color="black" />
-                </TouchableOpacity>
+              <View className="flex flex-row items-center w-full justify-between">
+                <Text className="text-red-500 mr-2 font-medium text-base">
+                  {formatPrice(item.price)}
+                </Text>
+                <View className="flex flex-row w-1/2 items-center justify-around border rounded-xl">
+                  <TouchableOpacity onPress={() => decrementCounter(item)}>
+                    <AntDesign name="minus" size={14} color="black" />
+                  </TouchableOpacity>
+                  <TextInput
+                    className="border-x text-center w-1/3"
+                    keyboardType="numeric"
+                    onChangeText={(value) => handleInputChange(value, item)}
+                    value={item.quantity.toString()}
+                  />
+                  <TouchableOpacity onPress={() => incrementCounter(item)}>
+                    <FontAwesome6 name="add" size={14} color="black" />
+                  </TouchableOpacity>
+                </View>
               </View>
+              <TouchableOpacity onPress={() => handleRemoveItem(item)}>
+                <Text>Xóa</Text>
+              </TouchableOpacity>
             </View>
           </View>
+        ))}
+        {/* Hiển thị tổng giá */}
+      </ScrollView>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: 10,
+          borderTopWidth: 1,
+          borderTopColor: "gray",
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: "white",
+        }}
+      >
+        <View className="flex flex-row items-center gap-1">
+          <Text className="">Tổng số tiền:</Text>
+          <Text className="text-red-500 font-bold text-base">
+            {formatPrice(totalPrice)}
+          </Text>
         </View>
-      )}
-    </ScrollView>
+        <TouchableOpacity>
+          <View className="rounded-lg p-3 bg-orange-600">
+            <Text className="text-white text-center font-semibold ">
+              Thanh toán
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
