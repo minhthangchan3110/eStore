@@ -15,18 +15,9 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 export default function OrderScreen() {
-  // const [counter, setCounter] = useState(1);
-  // console.log(counter);
-  // const incrementCounter = () => {
-  //   setCounter((prevCounter) => prevCounter + 1);
-  // };
-
-  // const decrementCounter = () => {
-  //   setCounter((prevCounter) => (prevCounter > 0 ? prevCounter - 1 : 0));
-  // };
-
   const route = useRoute();
-  const [product, setProduct] = useState(null);
+  const { products } = route.params;
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const formatPrice = (price) => {
     if (price === undefined || price === null) return "N/A";
@@ -37,19 +28,14 @@ export default function OrderScreen() {
   };
 
   useEffect(() => {
-    if (route.params && route.params.product) {
-      setProduct(route.params.product);
+    if (route.params && route.params.products) {
+      const total = route.params.products.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+      setTotalPrice(total);
     }
   }, [route.params]);
-
-  // const handleInputChange = (value) => {
-  //   const numberValue = parseInt(value, 10);
-  //   if (!isNaN(numberValue)) {
-  //     setCounter(numberValue);
-  //   } else {
-  //     setCounter(0);
-  //   }
-  // };
 
   return (
     <ScrollView className="w-full bg-white">
@@ -72,43 +58,31 @@ export default function OrderScreen() {
         colors={["#6fa6d6", "transparent", "#f18d9b"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        className="w-full h-1 my-4"
+        className="w-full h-1 my-2"
       />
-      {product && (
-        <View className="w-full flex flex-row px-1">
-          <View className="w-1/3 border-gray-300 rounded-lg border flex items-center">
-            <Image
-              source={{ uri: product.image }}
-              className="w-[100px] h-[80px]"
-            />
-          </View>
-          <View className="w-2/3 pl-2 flex flex-col justify-between">
-            <Text className="w-full font-semibold">{product.name}</Text>
-            <View className="flex flex-row items-center w-full">
-              <Text className="text-red-500 mr-2 font-medium text-base">
-                {formatPrice(product.price)}
-              </Text>
-              {/* <View className="flex flex-row w-1/2 items-center justify-around border rounded-xl">
-                <TouchableOpacity onPress={decrementCounter}>
-                  <AntDesign name="minus" size={14} color="black" />
-                </TouchableOpacity>
-                <TextInput
-                  className="border-x text-center w-1/3"
-                  keyboardType="numeric"
-                  onChangeText={handleInputChange}
-                  value={counter.toString()}
-                />
-                <TouchableOpacity onPress={incrementCounter}>
-                  <FontAwesome6 name="add" size={14} color="black" />
-                </TouchableOpacity>
-              </View> */}
-              <View>
-                <Text className="text-gray-500">x1</Text>
+      {products.map((product, index) => (
+        <View className="flex flex-col my-2">
+          <View className="w-full flex flex-row px-1">
+            <View className="w-1/3 border-gray-300 rounded-lg border flex flex-col items-center">
+              <Image
+                source={{ uri: product.image }}
+                className="w-[100px] h-[80px]"
+              />
+            </View>
+            <View className="w-2/3 pl-2 flex flex-col justify-between">
+              <Text className="w-full font-semibold">{product.name}</Text>
+              <View className="flex flex-row items-center w-full">
+                <Text className="text-red-500 mr-2 font-medium text-base">
+                  {formatPrice(product.price)}
+                </Text>
+                <View>
+                  <Text className="text-gray-500">x{product.quantity}</Text>
+                </View>
               </View>
             </View>
           </View>
         </View>
-      )}
+      ))}
       <View className="flex my-2 p-2 border-gray-300 flex-row w-full border-y items-center">
         <Text className="w-1/4">Tin nhắn: </Text>
         <TextInput
@@ -116,12 +90,10 @@ export default function OrderScreen() {
           placeholder="Để lại lưu ý..."
         ></TextInput>
       </View>
-      {product && (
-        <View className="flex flex-row justify-between pb-4 pt-2 px-2 border-gray-300 border-b">
-          <Text>Thành tiền (1 sản phẩm):</Text>
-          <Text className="text-red-500">{formatPrice(product.price)}</Text>
-        </View>
-      )}
+      <View className="flex flex-row justify-between pb-4 pt-2 px-2 border-gray-300 border-b">
+        <Text>Thành tiền ({products.quantity} sản phẩm):</Text>
+        <Text className="text-red-500">{formatPrice(totalPrice)}</Text>
+      </View>
       <LinearGradient
         colors={["#6fa6d6", "transparent", "#f18d9b"]}
         start={{ x: 0, y: 0 }}
@@ -169,7 +141,7 @@ export default function OrderScreen() {
         <View className="flex gap-2">
           <View className="flex flex-row justify-between">
             <Text className="text-gray-500">Tổng tiền hàng:</Text>
-            <Text className="text-gray-500">1,690,000₫</Text>
+            <Text className="text-gray-500">{formatPrice(totalPrice)}</Text>
           </View>
           <View className="flex flex-row justify-between">
             <Text className="text-gray-500">Phí vận chuyển:</Text>
@@ -177,7 +149,9 @@ export default function OrderScreen() {
           </View>
           <View className="flex flex-row justify-between">
             <Text className="text-base">Thành tiền:</Text>
-            <Text className="text-base text-red-500">1,705,000₫</Text>
+            <Text className="text-base text-red-500">
+              {formatPrice(totalPrice + 15000)}
+            </Text>
           </View>
         </View>
       </View>

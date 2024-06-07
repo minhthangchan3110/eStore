@@ -117,7 +117,9 @@ export default function ProductDetail({ item }) {
   };
 
   const handleBuyNow = () => {
-    navigation.navigate("order", { product });
+    const productWithQuantity = { ...product, quantity: 1 };
+    navigation.navigate("order", { products: [productWithQuantity] });
+    console.log({ products: productWithQuantity });
   };
 
   const formatPrice = (price) => {

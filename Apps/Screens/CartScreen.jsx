@@ -9,29 +9,46 @@ import {
 import CheckBox from "expo-checkbox";
 import React, { useEffect, useState } from "react";
 import { FontAwesome, AntDesign } from "@expo/vector-icons";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
   decrementQuantity,
   incrementQuantity,
   removeFromCart,
+  updateQuantity,
 } from "../../redux/cartReducer";
+import CustomAlertCart from "../Components/Modal/CustomAlertCart";
 
 export default function CartScreen() {
   const cart = useSelector((state) => state.cart.cart);
   const dispatch = useDispatch();
-
+  const [alertVisible, setAlertVisible] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [alertMessage, setAlertMessage] = useState("");
+  const navigation = useNavigation();
 
   useEffect(() => {
     let total = 0;
     selectedItems.forEach((itemIndex) => {
-      total += cart[itemIndex].price * cart[itemIndex].quantity;
+      const item = cart[itemIndex];
+      if (item) {
+        total += item.price * item.quantity;
+      }
     });
     setTotalPrice(total);
   }, [selectedItems, cart]);
+
+  const handleBuyNow = () => {
+    if (selectedItems.length === 0) {
+      setAlertMessage("Vui lòng chọn sản phẩm");
+      setAlertVisible(true);
+    } else {
+      const selectedProducts = selectedItems.map((index) => cart[index]);
+      navigation.navigate("order", { products: selectedProducts });
+    }
+  };
 
   const toggleCheckbox = (index) => {
     const selectedIndex = selectedItems.indexOf(index);
@@ -76,52 +93,54 @@ export default function CartScreen() {
   return (
     <View className="flex-1">
       <ScrollView className="bg-white w-screen">
-        {cart.map((item, index) => (
-          <View
-            key={index}
-            className="w-11/12 flex flex-row items-center px-2 my-2"
-          >
-            <CheckBox
-              disabled={false}
-              value={selectedItems.includes(index)}
-              onValueChange={() => toggleCheckbox(index)}
-            />
-            <View className="w-1/3 border-gray-300 rounded-lg border flex items-center ml-2">
-              <Image
-                source={{ uri: item.image }}
-                className="w-[100px] h-[80px]"
-              />
-            </View>
-            <View className="w-2/3 pl-2 flex flex-col justify-between ">
-              <Text className="w-full font-semibold " numberOfLines={2}>
-                {item.name}
-              </Text>
-              <View className="flex flex-row items-center w-full justify-between">
-                <Text className="text-red-500 mr-2 font-medium text-base">
-                  {formatPrice(item.price)}
-                </Text>
-                <View className="flex flex-row w-1/2 items-center justify-around border rounded-xl">
-                  <TouchableOpacity onPress={() => decrementCounter(item)}>
-                    <AntDesign name="minus" size={14} color="black" />
-                  </TouchableOpacity>
-                  <TextInput
-                    className="border-x text-center w-1/3"
-                    keyboardType="numeric"
-                    onChangeText={(value) => handleInputChange(value, item)}
-                    value={item.quantity.toString()}
+        {cart.map(
+          (item, index) =>
+            item && (
+              <View
+                key={index}
+                className="w-11/12 flex flex-row items-center px-2 my-2"
+              >
+                <CheckBox
+                  disabled={false}
+                  value={selectedItems.includes(index)}
+                  onValueChange={() => toggleCheckbox(index)}
+                />
+                <View className="w-1/3 border-gray-300 rounded-lg border flex items-center ml-2">
+                  <Image
+                    source={{ uri: item.image }}
+                    className="w-[100px] h-[80px] rounded-lg"
                   />
-                  <TouchableOpacity onPress={() => incrementCounter(item)}>
-                    <FontAwesome6 name="add" size={14} color="black" />
+                </View>
+                <View className="w-2/3 pl-2 flex flex-col justify-between ">
+                  <Text className="w-full font-semibold " numberOfLines={2}>
+                    {item.name}
+                  </Text>
+                  <View className="flex flex-row items-center w-full justify-between">
+                    <Text className="text-red-500 mr-2 font-medium text-base">
+                      {formatPrice(item.price)}
+                    </Text>
+                    <View className="flex flex-row w-1/2 items-center justify-around border rounded-xl">
+                      <TouchableOpacity onPress={() => decrementCounter(item)}>
+                        <AntDesign name="minus" size={14} color="black" />
+                      </TouchableOpacity>
+                      <TextInput
+                        className="border-x text-center w-1/3"
+                        keyboardType="numeric"
+                        onChangeText={(value) => handleInputChange(value, item)}
+                        value={item.quantity.toString()}
+                      />
+                      <TouchableOpacity onPress={() => incrementCounter(item)}>
+                        <FontAwesome6 name="add" size={14} color="black" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <TouchableOpacity onPress={() => handleRemoveItem(item)}>
+                    <Text>Xóa</Text>
                   </TouchableOpacity>
                 </View>
               </View>
-              <TouchableOpacity onPress={() => handleRemoveItem(item)}>
-                <Text>Xóa</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
-        {/* Hiển thị tổng giá */}
+            )
+        )}
       </ScrollView>
       <View
         style={{
@@ -144,13 +163,20 @@ export default function CartScreen() {
             {formatPrice(totalPrice)}
           </Text>
         </View>
-        <TouchableOpacity>
-          <View className="rounded-lg p-3 bg-orange-600">
-            <Text className="text-white text-center font-semibold ">
-              Thanh toán
-            </Text>
-          </View>
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity onPress={handleBuyNow}>
+            <View className="rounded-lg p-3 bg-orange-600">
+              <Text className="text-white text-center font-semibold ">
+                Thanh toán
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <CustomAlertCart
+            visible={alertVisible}
+            message={alertMessage}
+            onClose={() => setAlertVisible(false)}
+          />
+        </View>
       </View>
     </View>
   );
