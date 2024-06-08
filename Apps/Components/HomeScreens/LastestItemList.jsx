@@ -4,7 +4,7 @@ import PostItem from "./PostItem";
 
 export default function LastestItemList({ latestItemList, heading }) {
   return (
-    <View className="mt-3 w-full">
+    <View className="mt-2 w-full ">
       <Text className="font-bold text-xl">{heading}</Text>
       <FlatList
         data={latestItemList}

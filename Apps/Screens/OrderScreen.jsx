@@ -61,7 +61,7 @@ export default function OrderScreen() {
         className="w-full h-1 my-2"
       />
       {products.map((product, index) => (
-        <View className="flex flex-col my-2">
+        <View key={index} className="flex flex-col my-2">
           <View className="w-full flex flex-row px-1">
             <View className="w-1/3 border-gray-300 rounded-lg border flex flex-col items-center">
               <Image
@@ -91,7 +91,7 @@ export default function OrderScreen() {
         ></TextInput>
       </View>
       <View className="flex flex-row justify-between pb-4 pt-2 px-2 border-gray-300 border-b">
-        <Text>Thành tiền ({products.quantity} sản phẩm):</Text>
+        <Text>Thành tiền ({products.length} sản phẩm):</Text>
         <Text className="text-red-500">{formatPrice(totalPrice)}</Text>
       </View>
       <LinearGradient

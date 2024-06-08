@@ -25,7 +25,7 @@ export default function PostItem({ item }) {
   return (
     <TouchableOpacity
       onPress={() => navigation.push("product-detail", { product: item })}
-      className="flex-1 relative m-2 w-[150px] rounded-lg border-[1px] border-slate-200"
+      className="flex-1 bg-white relative m-2 w-[150px] rounded-lg border-[1px] border-slate-200"
     >
       <Image
         source={{ uri: item.image }}
