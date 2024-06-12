@@ -11,10 +11,8 @@ export const cartSlice = createSlice({
       const existingItem = state.cart.find((item) => item.name === name);
 
       if (existingItem) {
-        // Nếu sản phẩm đã tồn tại trong giỏ hàng, tăng số lượng lên 1
         existingItem.quantity++;
       } else {
-        // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới vào giỏ hàng với số lượng là 1
         state.cart.push({ ...action.payload, quantity: 1 });
       }
     },

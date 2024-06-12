@@ -1,11 +1,8 @@
 import { View, Text } from "react-native";
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../Screens/HomeScreen";
-import ExploreScreen from "../Screens/SaleScreen";
-import AddPostScreen from "../Screens/AddPostScreen";
+import AddPostScreen from "../Screens/ChatScreen";
 import ProfileScreen from "../Screens/ProfileScreen";
-import CartScreen from "../Screens/CartScreen";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import HomeScreenStackNav from "./HomeScreenStackNav";
@@ -13,6 +10,8 @@ import { AntDesign } from "@expo/vector-icons";
 import { Fontisto } from "@expo/vector-icons";
 import SaleScreen from "../Screens/SaleScreen";
 import FavoriteScreen from "../Screens/FavoriteScreen";
+import ChatScreen from "../Screens/ChatScreen";
+import SaleScreenStackNav from "./SaleScreenStackNav";
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigation() {
@@ -35,8 +34,8 @@ export default function TabNavigation() {
         }}
       />
       <Tab.Screen
-        name="sale"
-        component={SaleScreen}
+        name="sale-nav"
+        component={SaleScreenStackNav}
         options={{
           tabBarLabel: ({ color }) => (
             <Text style={{ color: color, fontSize: 12, marginBottom: 3 }}>
@@ -48,8 +47,8 @@ export default function TabNavigation() {
           ),
         }}
       />
-      <Tab.Screen
-        name="favorites"
+      {/* <Tab.Screen
+        name="favorite"
         component={FavoriteScreen}
         options={{
           tabBarLabel: ({ color }) => (
@@ -61,10 +60,10 @@ export default function TabNavigation() {
             <MaterialIcons name="favorite" size={24} color={color} />
           ),
         }}
-      />
+      /> */}
       <Tab.Screen
-        name="addpost"
-        component={AddPostScreen}
+        name="chat"
+        component={ChatScreen}
         options={{
           tabBarLabel: ({ color }) => (
             <Text style={{ color: color, fontSize: 12, marginBottom: 3 }}>

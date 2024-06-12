@@ -33,14 +33,16 @@ import { TextInput } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/cartReducer";
 import CustomAlert from "../Components/Modal/CustomAlert";
+import { addToFavorite } from "../../redux/favoritesReducer";
 
 const windowWidth = Dimensions.get("window").width;
 
 export default function ProductDetail({ item }) {
   const cart = useSelector((state) => state.cart.cart);
-
+  const favorites = useSelector((state) => state.favorites.favorites);
   const dispatch = useDispatch();
   const addItemToCart = (item) => dispatch(addToCart(item));
+  const addItemToFavorites = (item) => dispatch(addToFavorite(item));
   const { params } = useRoute();
   const [product, setProduct] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
@@ -121,7 +123,14 @@ export default function ProductDetail({ item }) {
     navigation.navigate("order", { products: [productWithQuantity] });
     console.log({ products: productWithQuantity });
   };
-
+  const toggleFavorite = () => {
+    console.log("Product to be added to cart:", product);
+    addItemToFavorites(product);
+    setAlertVisible(true);
+    setIsFavorite(!isFavorite);
+    console.log("Add Favorite");
+    navigation.navigate("favorites");
+  };
   const formatPrice = (price) => {
     if (price === undefined || price === null) return "N/A";
     const formattedPrice = price
@@ -165,10 +174,7 @@ export default function ProductDetail({ item }) {
   const parsedInformation = parseInformation(product.infomation);
 
   const [isFavorite, setIsFavorite] = useState(false);
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
-    console.log("Add Favorite");
-  };
+
   const [rating, setRating] = useState(0);
 
   const handleRating = (ratingValue) => {

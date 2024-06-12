@@ -15,7 +15,6 @@ export default function Header() {
   const cart = useSelector((state) => state.cart.cart); // Truy cập trạng thái giỏ hàng từ Redux Store
 
   useEffect(() => {
-    // Tính tổng số lượng sản phẩm trong giỏ hàng khi giỏ hàng thay đổi
     const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
     setCartItemCount(totalItems);
   }, [cart]);

@@ -1,14 +1,13 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  FlatList,
-} from "react-native";
-import React, { useState } from "react";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import FavoriteCard from "../Components/HomeScreens/FavoriteCard";
 
-export default function FavoriteScreen() {
+export default function FavoriteScreen({ item }) {
+  const favorites = useSelector((state) => state.favorites.favorites);
+  console.log(favorites);
+
   const [selectedTab, setSelectedTab] = useState("all");
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -21,28 +20,8 @@ export default function FavoriteScreen() {
     setSelectedTab(tab);
   };
 
-  const dropdownData = [
-    { key: "1", label: "Loại 1" },
-    { key: "2", label: "Loại 2" },
-    { key: "3", label: "Loại 3" },
-  ];
-
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      onPress={() => {
-        handleTabPress(item.label);
-        toggleDropdown();
-      }}
-      style={{
-        padding: 10,
-        backgroundColor: selectedTab === item.label ? "#f0f0f0" : "white",
-      }}
-    >
-      <Text>{item.label}</Text>
-    </TouchableOpacity>
-  );
   return (
-    <ScrollView className="w-full bg-white">
+    <ScrollView className="w-full bg-white h-screen">
       <View className="bg-orange-500 p-2">
         <Text className="text-center text-white text-lg font-bold mt-5">
           Yêu thích
@@ -103,22 +82,7 @@ export default function FavoriteScreen() {
           />
         </TouchableOpacity>
       </View>
-      {showDropdown && (
-        <FlatList
-          data={dropdownData}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.key}
-          style={{
-            marginTop: 10,
-            marginLeft: 20,
-            marginRight: 20,
-            borderRadius: 5,
-            backgroundColor: "#fff",
-            elevation: 3,
-            maxHeight: 150,
-          }}
-        />
-      )}
+      <FavoriteCard data={favorites} />
     </ScrollView>
   );
 }

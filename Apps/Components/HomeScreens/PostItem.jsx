@@ -3,6 +3,7 @@ import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 export default function PostItem({ item }) {
+  const navigation = useNavigation();
   const formatPrice = (price) => {
     if (price === undefined || price === null) return "N/A";
     const formattedPrice = price
@@ -21,7 +22,6 @@ export default function PostItem({ item }) {
 
   //////
 
-  const navigation = useNavigation();
   return (
     <TouchableOpacity
       onPress={() => navigation.push("product-detail", { product: item })}
