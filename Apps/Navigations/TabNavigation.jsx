@@ -12,6 +12,7 @@ import SaleScreen from "../Screens/SaleScreen";
 import FavoriteScreen from "../Screens/FavoriteScreen";
 import ChatScreen from "../Screens/ChatScreen";
 import SaleScreenStackNav from "./SaleScreenStackNav";
+import ProfileScreenStackNav from "./ProfileScreenStackNav";
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigation() {
@@ -47,20 +48,7 @@ export default function TabNavigation() {
           ),
         }}
       />
-      {/* <Tab.Screen
-        name="favorite"
-        component={FavoriteScreen}
-        options={{
-          tabBarLabel: ({ color }) => (
-            <Text style={{ color: color, fontSize: 12, marginBottom: 3 }}>
-              Yêu thích
-            </Text>
-          ),
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="favorite" size={24} color={color} />
-          ),
-        }}
-      /> */}
+
       <Tab.Screen
         name="chat"
         component={ChatScreen}
@@ -76,8 +64,8 @@ export default function TabNavigation() {
         }}
       />
       <Tab.Screen
-        name="profile"
-        component={ProfileScreen}
+        name="profile-nav"
+        component={ProfileScreenStackNav}
         options={{
           tabBarLabel: ({ color }) => (
             <Text style={{ color: color, fontSize: 12, marginBottom: 3 }}>

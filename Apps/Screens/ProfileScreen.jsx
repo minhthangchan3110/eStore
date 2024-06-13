@@ -5,8 +5,10 @@ import { AntDesign } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation } from "@react-navigation/native";
 export default function ProfileScreen() {
   const { user } = useUser();
+  const navigation = useNavigation();
   const optionMore = [
     {
       icon: <MaterialIcons name="restore" size={24} color="orange" />,
@@ -15,6 +17,9 @@ export default function ProfileScreen() {
     {
       icon: <MaterialIcons name="favorite" size={24} color="red" />,
       title: "Yêu thích",
+      onPress: () => {
+        navigation.navigate("favorites");
+      },
     },
     {
       icon: <AntDesign name="clockcircleo" size={24} color="blue" />,
@@ -45,14 +50,16 @@ export default function ProfileScreen() {
       title: "Trò chuyện với chúng tôi",
     },
   ];
-
+  const handleSettings = () => {
+    navigation.navigate("account-settings");
+  };
   return (
     <ScrollView className="w-full bg-white ">
       <View className="flex flex-row justify-between bg-black p-4">
         <View>
           <Text className="text-white text-xl font-bold ">2301Store</Text>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleSettings}>
           <AntDesign name="setting" size={24} color="white" />
         </TouchableOpacity>
       </View>
@@ -75,6 +82,7 @@ export default function ProfileScreen() {
       </View>
       {optionMore.map((option, index) => (
         <TouchableOpacity
+          onPress={option.onPress}
           key={index}
           className="flex flex-row items-center w-full px-2 py-4 border-b border-gray-200"
         >

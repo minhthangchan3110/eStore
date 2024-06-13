@@ -129,7 +129,6 @@ export default function ProductDetail({ item }) {
     setAlertVisible(true);
     setIsFavorite(!isFavorite);
     console.log("Add Favorite");
-    navigation.navigate("favorites");
   };
   const formatPrice = (price) => {
     if (price === undefined || price === null) return "N/A";

@@ -22,11 +22,6 @@ export default function FavoriteScreen({ item }) {
 
   return (
     <ScrollView className="w-full bg-white h-screen">
-      <View className="bg-orange-500 p-2">
-        <Text className="text-center text-white text-lg font-bold mt-5">
-          Yêu thích
-        </Text>
-      </View>
       <View className="flex flex-row px-2 w-full gap-1 mt-2 justify-center items-center">
         <TouchableOpacity
           className={`w-1/3 border px-1 py-2 ${
