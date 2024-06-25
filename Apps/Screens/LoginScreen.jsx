@@ -1,27 +1,53 @@
-import { View, Text, Image, Touchable, TouchableOpacity } from "react-native";
-
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import * as WebBrowser from "expo-web-browser";
 import { useWarmUpBrowser } from "../../hooks/useWarmUpBrowser";
 import { useOAuth } from "@clerk/clerk-expo";
+
 WebBrowser.maybeCompleteAuthSession();
+
 export default function LoginScreen() {
   useWarmUpBrowser();
 
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
+
   const onPress = React.useCallback(async () => {
     try {
-      const { createdSessionId, signIn, signUp, setActive } =
+      const { createdSessionId, signIn, signUp, setActive, error } =
         await startOAuthFlow();
 
+      // Kiểm tra nếu có lỗi
+      if (error) {
+        console.error("OAuth error", error);
+        alert("Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại.");
+        return;
+      }
+
+      // Kiểm tra các giá trị trả về
+      console.log("OAuth Response:", { createdSessionId, signIn, signUp });
+
       if (createdSessionId) {
-        setActive({ session: createdSessionId });
+        await setActive({ session: createdSessionId });
+        console.log("Session created successfully:", createdSessionId);
       } else {
+        // Xử lý nếu phiên không được tạo
+        if (signUp.status === "missing_requirements") {
+          // Điền vào các thông tin bắt buộc nếu còn thiếu
+          console.log("Thông tin đăng ký còn thiếu:", signUp.missingFields);
+          alert("Vui lòng điền đầy đủ thông tin đăng ký.");
+          // Bạn có thể hướng dẫn người dùng hoàn thiện thông tin cần thiết ở đây
+        } else {
+          console.log("Không có phiên nào được tạo");
+          alert("Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại.");
+        }
       }
     } catch (err) {
-      console.error("OAuth error", err);
+      console.error("Lỗi OAuth", err);
+      // Hiển thị thông báo lỗi thân thiện với người dùng
+      alert("Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại.");
     }
-  }, []);
+  }, [startOAuthFlow]);
+
   return (
     <View className="h-[85vh]">
       <Image
@@ -38,9 +64,9 @@ export default function LoginScreen() {
         </Text>
         <TouchableOpacity
           onPress={onPress}
-          className="p-3 bg-pink-400 items-center mt-10 rounded-full "
+          className="p-3 bg-pink-400 items-center mt-10 rounded-full"
         >
-          <Text className="text-white">Get Started</Text>
+          <Text className="text-white">Bắt Đầu</Text>
         </TouchableOpacity>
       </View>
     </View>

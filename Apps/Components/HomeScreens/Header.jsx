@@ -7,6 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 export default function Header() {
   const { user } = useUser();
+
   const navigation = useNavigation();
   const handleGoCart = () => {
     navigation.navigate("cart");
@@ -28,7 +29,7 @@ export default function Header() {
             className="rounded-full w-12 h-12 mr-2"
           />
           <View>
-            <Text className="text-[15px]">Welcome</Text>
+            <Text className="text-[15px]">Xin chào</Text>
             <Text className="text-[18px] font-bold">{user?.fullName}</Text>
           </View>
         </View>
@@ -63,7 +64,7 @@ export default function Header() {
       <View className="p-3 px-5 flex flex-row items-center bg-white mt-5 rounded-full border-pink-300 border-[2px]">
         <Ionicons name="search" size={24} color="gray" />
         <TextInput
-          placeholder="Search"
+          placeholder="Tìm kiếm"
           className="ml-2"
           onChangeText={(value) => console.log(value)}
         />

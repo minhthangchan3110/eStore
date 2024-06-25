@@ -55,7 +55,7 @@ export default function ProfileScreen() {
   };
   return (
     <ScrollView className="w-full bg-white ">
-      <View className="flex flex-row justify-between bg-black p-4">
+      <View className="flex flex-row justify-between items-center bg-black p-4">
         <View>
           <Text className="text-white text-xl font-bold ">2301Store</Text>
         </View>

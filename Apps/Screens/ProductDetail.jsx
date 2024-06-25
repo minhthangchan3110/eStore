@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Text,
   ScrollView,
-  Button,
   Alert,
 } from "react-native";
 import {
@@ -33,7 +32,10 @@ import { TextInput } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/cartReducer";
 import CustomAlert from "../Components/Modal/CustomAlert";
-import { addToFavorite } from "../../redux/favoritesReducer";
+import {
+  addToFavorite,
+  removeFromFavorite,
+} from "../../redux/favoritesReducer";
 
 const windowWidth = Dimensions.get("window").width;
 
@@ -43,6 +45,7 @@ export default function ProductDetail({ item }) {
   const dispatch = useDispatch();
   const addItemToCart = (item) => dispatch(addToCart(item));
   const addItemToFavorites = (item) => dispatch(addToFavorite(item));
+  const removeItemFromFavorites = (item) => dispatch(removeFromFavorite(item));
   const { params } = useRoute();
   const [product, setProduct] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
@@ -51,25 +54,51 @@ export default function ProductDetail({ item }) {
   const db = getFirestore(app);
   const navigation = useNavigation();
   const [alertVisible, setAlertVisible] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [averageRating, setAverageRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
+
   useEffect(() => {
     if (params && params.product) {
       setProduct(params.product);
       getProductsByCategory(params.product.category, params.product.name);
       getReviews();
+      checkIfFavorite(params.product);
     }
   }, [params]);
 
+  const checkIfFavorite = (product) => {
+    const favorite = favorites.some((fav) => fav.name === product.name);
+    setIsFavorite(favorite);
+  };
+
   const getReviews = async () => {
     try {
-      const db = getFirestore(app);
       const reviewsRef = collection(db, "Reviews");
-      const q = query(reviewsRef);
+      const q = query(
+        reviewsRef,
+        where("productName", "==", params.product.name)
+      );
       const querySnapshot = await getDocs(q);
       const reviewsData = [];
+      let totalRating = 0;
+
       querySnapshot.forEach((doc) => {
-        reviewsData.push(doc.data());
+        const review = doc.data();
+
+        review.rating = parseInt(review.rating);
+        reviewsData.push(review);
+        totalRating += review.rating;
+        console.log(totalRating);
       });
+
       setReviews(reviewsData);
+      setReviewCount(reviewsData.length);
+      setAverageRating(
+        reviewsData.length > 0 ? totalRating / reviewsData.length : 0
+      );
     } catch (error) {
       console.error("Error fetching reviews: ", error);
       Alert.alert("Error", "Failed to fetch reviews.");
@@ -123,13 +152,17 @@ export default function ProductDetail({ item }) {
     navigation.navigate("order", { products: [productWithQuantity] });
     console.log({ products: productWithQuantity });
   };
+
   const toggleFavorite = () => {
-    console.log("Product to be added to cart:", product);
-    addItemToFavorites(product);
-    setAlertVisible(true);
+    if (isFavorite) {
+      removeItemFromFavorites(product);
+    } else {
+      addItemToFavorites(product);
+    }
     setIsFavorite(!isFavorite);
-    console.log("Add Favorite");
+    console.log("Toggled Favorite:", !isFavorite);
   };
+
   const formatPrice = (price) => {
     if (price === undefined || price === null) return "N/A";
     const formattedPrice = price
@@ -172,15 +205,9 @@ export default function ProductDetail({ item }) {
 
   const parsedInformation = parseInformation(product.infomation);
 
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  const [rating, setRating] = useState(0);
-
   const handleRating = (ratingValue) => {
     setRating(ratingValue);
   };
-
-  const [comment, setComment] = useState("");
 
   const handleCommentChange = (text) => {
     setComment(text);
@@ -240,11 +267,15 @@ export default function ProductDetail({ item }) {
         <Text className="text-xl m-2 font-medium">{product.name}</Text>
         <View className="flex-row justify-between items-center px-2 pb-2">
           <View className="flex gap-2 items-center justify-center flex-row">
-            <Text className="text-base font-medium text-yellow-400">4.5</Text>
+            <Text className="text-base font-medium text-yellow-400">
+              {averageRating.toFixed(1)}
+            </Text>
             <Ionicons name="star" size={18} color="yellow" />
           </View>
           <View className="flex flex-row gap-1 items-center justify-center">
-            <Text className="text-normal text-gray-500">(10 đánh giá)</Text>
+            <Text className="text-normal text-gray-500">
+              ({reviewCount} đánh giá)
+            </Text>
             <MaterialIcons
               name={isFavorite ? "favorite" : "favorite-border"}
               onPress={toggleFavorite}

@@ -20,5 +20,5 @@ export const favoriteSlide = createSlice({
     },
   },
 });
-export const { addToFavorite, removeFromCart } = favoriteSlide.actions;
+export const { addToFavorite, removeFromFavorite } = favoriteSlide.actions;
 export default favoriteSlide.reducer;
