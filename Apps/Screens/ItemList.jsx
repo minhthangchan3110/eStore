@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { useRoute } from "@react-navigation/native";
 import {
   collection,
@@ -12,7 +18,7 @@ import { app } from "../../firebaseConfig";
 import LastestItemList from "../Components/HomeScreens/LastestItemList";
 import { Dropdown } from "react-native-element-dropdown";
 import ListItemCate from "../Components/HomeScreens/ListItemCate";
-
+import { MaterialIcons } from "@expo/vector-icons";
 const dataPrice = [
   { label: "Mức giá", value: "" },
   { label: "149,000 - 499,000", value: "149000-499000" },
@@ -85,7 +91,7 @@ export default function ItemList() {
   return (
     <ScrollView style={{ backgroundColor: "white" }}>
       <View className="flex-1 w-full flex-row px-2">
-        <Dropdown
+        {/* <Dropdown
           className="p-5 h-[50px] w-full border pr-2 mt-2 border-gray-200 rounded-lg"
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
@@ -101,8 +107,11 @@ export default function ItemList() {
             setValuePrice(selectedValue);
             setSelectedPrice(selectedValue);
           }}
-        />
+        /> */}
       </View>
+      <TouchableOpacity className="w-full flex items-end mt-2 pr-2">
+        <MaterialIcons name="filter-alt" size={24} color="black" />
+      </TouchableOpacity>
       {selectedPrice && typePrice.length > 0 ? (
         <ListItemCate latestItemList={typePrice} heading="" />
       ) : itemList.length > 0 ? (

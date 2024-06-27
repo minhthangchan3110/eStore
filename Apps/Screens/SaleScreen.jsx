@@ -10,16 +10,25 @@ import {
 import { app } from "../../firebaseConfig";
 import SaleOption from "../Components/SaleScreen/SaleOption";
 import LastestItemList from "../Components/HomeScreens/LastestItemList";
-import ListItemCate from "../Components/HomeScreens/ListItemCate";
 
 export default function SaleScreen() {
   const db = getFirestore(app);
-  const [loaItems, setLoaItems] = useState([]);
-  const [appleItems, setAppleItems] = useState([]);
+  const [screenItems, setScreenItems] = useState([]);
+  const [mouseItems, setMouseItems] = useState([]);
+  const [keyboardItems, setKeyboardItems] = useState([]);
+  const [laptopItems, setLaptopItems] = useState([]);
+  const [pcItems, setPCItems] = useState([]);
+  const [headphoneItems, setHeadphoneItems] = useState([]);
+  const [charItems, setCharItems] = useState([]);
 
   useEffect(() => {
-    getProductsByCategory("Loa", setLoaItems);
-    getProductsByCategory("Apple", setAppleItems);
+    getProductsByCategory("Màn hình", setScreenItems);
+    getProductsByCategory("Chuột", setMouseItems);
+    getProductsByCategory("Bàn phím", setKeyboardItems);
+    getProductsByCategory("Laptop", setLaptopItems);
+    getProductsByCategory("PC", setPCItems);
+    getProductsByCategory("Tai nghe", setHeadphoneItems);
+    getProductsByCategory("Ghế", setCharItems);
   }, []);
 
   const getProductsByCategory = async (category, setItems) => {
@@ -28,7 +37,7 @@ export default function SaleScreen() {
       const q = query(
         collection(db, "Products"),
         where("category", "==", category),
-        where("sale", ">", 20)
+        where("sale", ">", 1)
       );
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
@@ -59,7 +68,49 @@ export default function SaleScreen() {
           source={require("../../assets/img/Banner/screen.png")}
           className="w-3/4 h-14"
         />
-        <LastestItemList latestItemList={loaItems} />
+        <LastestItemList latestItemList={screenItems} />
+      </View>
+      <View className="w-full flex items-center bg-yellow-200">
+        <Image
+          source={require("../../assets/img/Banner/mouse.png")}
+          className="w-3/4 h-14"
+        />
+        <LastestItemList latestItemList={mouseItems} />
+      </View>
+      <View className="w-full flex items-center bg-yellow-200">
+        <Image
+          source={require("../../assets/img/Banner/bp.png")}
+          className="w-3/4 h-14"
+        />
+        <LastestItemList latestItemList={keyboardItems} />
+      </View>
+      <View className="w-full flex items-center bg-yellow-200">
+        <Image
+          source={require("../../assets/img/Banner/laptop.png")}
+          className="w-3/4 h-14"
+        />
+        <LastestItemList latestItemList={laptopItems} />
+      </View>
+      <View className="w-full flex items-center bg-yellow-200">
+        <Image
+          source={require("../../assets/img/Banner/headphone.png")}
+          className="w-3/4 h-14"
+        />
+        <LastestItemList latestItemList={headphoneItems} />
+      </View>
+      <View className="w-full flex items-center bg-yellow-200">
+        <Image
+          source={require("../../assets/img/Banner/mouse.png")}
+          className="w-3/4 h-14"
+        />
+        <LastestItemList latestItemList={headphoneItems} />
+      </View>
+      <View className="w-full flex items-center bg-yellow-200">
+        <Image
+          source={require("../../assets/img/Banner/char.png")}
+          className="w-3/4 h-14"
+        />
+        <LastestItemList latestItemList={charItems} />
       </View>
     </ScrollView>
   );
